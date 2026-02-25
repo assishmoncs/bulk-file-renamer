@@ -49,6 +49,10 @@ npm run build:win
 ### Rename Preview
 ![Rename Preview](screenshots/preview2.png)
 
+## ⬇ Download
+
+[Download Latest Version](https://github.com/assishmoncs/bulk-file-renamer/releases/latest)
+
 ## 📄 License
 
 MIT License
