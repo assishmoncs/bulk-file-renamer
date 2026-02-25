@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'">
+<title>Bulk File Renamer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Titlebar -->
+  <div id="titlebar">
+    <div class="logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+        <line x1="12" y1="12" x2="12" y2="18"/>
+      </svg>
+      <span class="app-name">Bulk File Renamer</span>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <!-- Sidebar: Folder + Rules -->
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <div id="folder-info">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span id="folder-path">No folder selected</span>
+        </div>
+        <button class="btn btn-secondary btn-full" id="btn-open-folder">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 3h9a2 2 0 0 1 2 2v2"/><path d="m21 15-5 5-5-5"/><path d="M16 20V10"/></svg>
+          Open Folder
+        </button>
+      </div>
+
+      <div id="rules-panel">
+        <div class="rules-section-label">Rename Rules</div>
+        <div id="rules-list"></div>
+
+        <div id="add-rule-area">
+          <div class="form-row">
+            <select class="form-control" id="rule-type-select">
+              <optgroup label="Text Operations">
+                <option value="prefix">Add Prefix</option>
+                <option value="suffix">Add Suffix</option>
+                <option value="replace">Find &amp; Replace</option>
+                <option value="removeChars">Remove Characters</option>
+                <option value="insertAt">Insert at Position</option>
+                <option value="removeAt">Remove by Position</option>
+              </optgroup>
+              <optgroup label="Case">
+                <option value="case">Change Case</option>
+              </optgroup>
+              <optgroup label="Numbering">
+                <option value="sequential">Sequential Numbering</option>
+              </optgroup>
+              <optgroup label="Extensions">
+                <option value="changeExt">Change Extension</option>
+                <option value="filterExt">Filter by Extension</option>
+              </optgroup>
+              <optgroup label="Cleanup">
+                <option value="trimSpaces">Trim / Clean Spaces</option>
+                <option value="removeSpecial">Remove Special Characters</option>
+              </optgroup>
+              <optgroup label="Date / Time">
+                <option value="dateRename">Date Rename</option>
+              </optgroup>
+              <optgroup label="Advanced">
+                <option value="regex">Regex Replace</option>
+              </optgroup>
+            </select>
+            <button class="btn btn-primary btn-sm" id="btn-add-rule">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:10px 12px; border-top:1px solid var(--border); display:flex; gap:8px;">
+        <button class="btn btn-secondary btn-sm" id="btn-clear-rules" style="flex:1">Clear Rules</button>
+      </div>
+    </div>
+
+    <!-- Content: Preview Table -->
+    <div id="content">
+      <div id="toolbar">
+        <span id="file-count">No files loaded</span>
+        <div class="toolbar-sep"></div>
+        <button class="btn btn-secondary btn-sm" id="btn-refresh" disabled>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+        <button class="btn btn-success" id="btn-rename" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Apply Rename
+        </button>
+      </div>
+
+      <div id="preview-wrap">
+        <div id="progress-bar"></div>
+        <div id="empty-state">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <p>No folder selected</p>
+          <small>Click "Open Folder" to get started</small>
+        </div>
+        <table id="preview-table" style="display:none">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Original Filename</th>
+              <th></th>
+              <th>New Filename</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="preview-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Status Bar -->
+      <div id="statusbar">
+        <div class="status-item">
+          <div class="status-dot" id="status-dot"></div>
+          <span id="status-message">Ready</span>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="status-item" id="stat-total" style="display:none">
+          <span id="stat-total-val"></span>
+        </div>
+        <div class="status-item" id="stat-changed" style="display:none">
+          <span id="stat-changed-val" style="color:var(--accent)"></span>
+        </div>
+        <div class="status-item" id="stat-conflict" style="display:none">
+          <span id="stat-conflict-val" style="color:var(--red)"></span>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="undo-btn-status" style="display:none">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+          Undo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="renderer.js"></script>
+</body>
+</html>
