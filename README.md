@@ -43,7 +43,11 @@ npm run build:win
 
 ## 📸 Screenshots
 
+### Main Interface
+![Main UI](screenshots/preview1.png)
 
+### Rename Preview
+![Rename Preview](screenshots/preview2.png)
 
 ## 📄 License
 
